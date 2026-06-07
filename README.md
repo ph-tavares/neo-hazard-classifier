@@ -63,21 +63,21 @@ O **tamanho (magnitude absoluta) e a proximidade (menor distância de aproximaç
 
 ## Como executar
 ```bash
-python -m pip install -r requirements-dev.txt
+python3 -m pip install -r requirements-dev.txt
 
 # (opcional) recriar o dataset do zero — precisa de uma chave da NASA:
 #   export NASA_API_KEY=<sua_chave>
-#   python -m src.collect_neos --pages 1000
+#   python3 -m src.collect_neos --pages 1000
 
 # gerar e executar o notebook do pipeline (treina, avalia, SHAP, salva model.joblib):
-python tools/build_notebook.py
-python -m nbconvert --to notebook --execute --inplace notebook.ipynb
+python3 tools/build_notebook.py
+python3 -m nbconvert --to notebook --execute --inplace notebook.ipynb
 
 # rodar os testes:
-python -m pytest -v
+python3 -m pytest -v
 
 # rodar o app localmente:
-python app.py
+python3 app.py
 ```
 
 ## Aplicação no ar
