@@ -28,36 +28,44 @@ Asteroides cujas órbitas os trazem para perto da Terra (NEOs) são monitorados 
 ## Metodologia
 1. **Coleta** (NeoWs `browse`, 1 linha por asteroide; features de aproximação agregadas **apenas sobre aproximações da Terra**, pois o critério de PHA é relativo à Terra).
 2. **Decisão anti-vazamento:** o rótulo PHA é, por definição, `tamanho (H ≤ 22) E proximidade orbital (MOID ≤ 0,05 UA)`. **Removemos o MOID** (`minimum_orbit_intersection`) — seria metade exata da regra — e também o `is_sentry_object`. A `absolute_magnitude_h` é mantida como variável física legítima; ela codifica o **critério de tamanho**, e isso é declarado abertamente. A dimensão de proximidade vira aprendizado real via `miss_distance` (que **não** é igual ao MOID).
-3. **Pré-processamento:** uma única feature de tamanho (`absolute_magnitude_h`; os diâmetros, derivados dela pela NeoWs, são removidos por colinearidade — ver heatmap no notebook). `StandardScaler` ajustado **apenas no conjunto de treino** (evita vazamento de estatísticas de escala). Split **estratificado**, `random_state=42`.
-4. **Modelos:** `XGBClassifier` (com `scale_pos_weight` para o desbalanceamento) e `MLPClassifier`. Treino: 12.912 / Teste: 5.535 (PHA: 1.343 / 576). `scale_pos_weight ≈ 8,61`.
-5. **Validação:** accuracy, precision, recall e F1 (foco na classe PHA), `classification_report` e matriz de confusão.
+3. **Pré-processamento e split:** uma única feature de tamanho (`absolute_magnitude_h`; os diâmetros, derivados dela pela NeoWs, são removidos por colinearidade — ver heatmap no notebook). Split **estratificado em 3 conjuntos** — treino 60% / validação 20% / teste 20%, `random_state=42` — persistidos em `data/neos_split.csv` (coluna `split`). `StandardScaler` ajustado **apenas no treino** (evita vazamento de estatísticas de escala).
+4. **Modelos:** `XGBClassifier` (com `scale_pos_weight ≈ 8,62`, calculado no treino) e `MLPClassifier`, treinados no conjunto de treino. Treino: **11.067** / Validação: **3.690** / Teste: **3.690** (PHA: 1.151 / 384 / 384).
+5. **Seleção e validação:** o modelo é escolhido na **validação** (recall da classe PHA); as métricas finais são reportadas no **teste intocado** (accuracy, precision, recall, F1 com foco em PHA, `classification_report`, matriz de confusão).
 6. **Interpretabilidade:** SHAP (`summary_plot`) + `plot_importance` sobre o XGBoost.
 
 ## Modelos testados e resultados
+
+**Seleção (na VALIDAÇÃO) — critério: recall da classe PHA:**
 | Modelo | Accuracy | Precision (PHA) | Recall (PHA) | F1 (PHA) |
 |---|---|---|---|---|
-| **XGBoost** | 0,933 | 0,619 | **0,927** | 0,743 |
-| MLP | **0,962** | **0,856** | 0,766 | **0,808** |
+| **XGBoost** | 0,933 | 0,623 | **0,896** | 0,735 |
+| MLP | **0,960** | **0,862** | 0,732 | **0,792** |
 
-**Trade-off honesto.** O `scale_pos_weight` leva o XGBoost a **recall alto (0,93)** com precisão menor (0,62); o MLP é mais equilibrado e **vence em F1 e accuracy**. Os dois resultados são reportados abertamente.
+→ **XGBoost escolhido** (maior recall na validação: 0,896 vs 0,732).
 
-**Modelo final: XGBoost**, selecionado pelo **recall da classe PHA**. Razão de domínio: em triagem de defesa planetária, **deixar de sinalizar um asteroide perigoso (falso negativo) é muito mais caro** do que um falso alarme (que apenas gera observação de acompanhamento). O XGBoost deixa escapar ~7% dos perigos (recall 0,93) contra ~23% do MLP (recall 0,77). É também o modelo de árvore interpretável via o SHAP ensinado.
+**Métricas FINAIS no TESTE intocado:**
+| Modelo | Accuracy | Precision (PHA) | Recall (PHA) | F1 (PHA) |
+|---|---|---|---|---|
+| **XGBoost (escolhido)** | 0,935 | 0,629 | **0,917** | 0,746 |
+| MLP (referência) | **0,962** | **0,877** | 0,742 | **0,804** |
+
+**Trade-off honesto.** O `scale_pos_weight` leva o XGBoost a **recall alto** com precisão menor; o MLP é mais equilibrado e **vence em F1 e accuracy** — reportado abertamente. Escolhemos o XGBoost pelo **recall** (razão de domínio: em defesa planetária, **deixar de sinalizar um asteroide perigoso — falso negativo — é muito mais caro** que um falso alarme). No teste, o XGBoost deixa escapar **~8%** dos perigos (recall 0,917) contra **~26%** do MLP (0,742). É também o modelo de árvore interpretável via o SHAP ensinado.
 
 ## Interpretação com SHAP
 Importância média (|SHAP|) sobre o XGBoost:
 
 | Variável | Importância média (\|SHAP\|) |
 |---|---|
-| `absolute_magnitude_h` | 5,18 |
+| `absolute_magnitude_h` | 5,13 |
 | `miss_distance_min_au` | 1,67 |
-| `relative_velocity_max_kms` | 0,39 |
-| `n_close_approaches` | 0,22 |
-| `miss_distance_mean_au` | 0,14 |
+| `relative_velocity_max_kms` | 0,47 |
+| `miss_distance_mean_au` | 0,18 |
+| `n_close_approaches` | 0,18 |
 
 O **tamanho (magnitude absoluta) e a proximidade (menor distância de aproximação) dominam** a decisão — coerente com a definição de PHA (tamanho + proximidade). Isso é consequência direta de manter a magnitude como feature, e está documentado como tal.
 
 ## Limitações (honestas)
-- **Sem validação cruzada:** o fluxo manual da disciplina usa um único `train_test_split`; CV manual (`cross_val_score`/`KFold`) não foi ensinada nesse fluxo. As métricas vêm de **um único split estratificado** — limitação declarada, não defeito.
+- **Holdout único (não k-fold CV):** usamos split estratificado em 3 conjuntos (treino/validação/teste) — seleção na validação, avaliação final no teste intocado. Não fazemos validação cruzada k-fold (não ensinada no fluxo manual da disciplina); as métricas vêm de um único particionamento (seed fixa).
 - **Viés de seleção:** ver seção "Fonte dos dados".
 - **Vazamento parcial assumido:** a magnitude codifica o critério de tamanho; mantida por ser uma variável física legítima e por não esvaziar a tarefa. O MOID (critério orbital exato) foi removido.
 
@@ -105,6 +113,7 @@ neo-hazard-classifier/
 ├── requirements.txt          # deps de runtime (app / HF Space)
 ├── requirements-dev.txt      # deps de desenvolvimento (coleta, notebook, testes)
 ├── data/neos_raw.csv         # snapshot da coleta (reprodutível sem API)
+├── data/neos_split.csv       # mesmos dados + coluna 'split' (train/val/test)
 ├── src/
 │   ├── neo_features.py       # lógica pura de features (testada)
 │   └── collect_neos.py       # coleta NeoWs (censo + coleta paginada)
