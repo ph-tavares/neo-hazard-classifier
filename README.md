@@ -81,7 +81,18 @@ python3 app.py
 ```
 
 ## Aplicação no ar
-**[A PUBLICAR]** — Hugging Face Space (Gradio). O link persistente será inserido aqui após o deploy.
+**App no ar (Hugging Face Spaces, link persistente):**
+https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
+
+Interface Gradio que carrega o modelo treinado (`model.joblib`) e classifica um
+asteroide a partir das suas características.
+
+> Nota de deploy: o Space roda em **Python 3.11** e usa **gradio 5.x** (versão
+> moderna, compatível com a infra atual do HF Spaces). O `requirements.txt` deste
+> repositório fixa `gradio 4.44.1` por causa do ambiente **local** (Python 3.9);
+> o `app.py` usa apenas APIs estáveis em ambas as versões. As bibliotecas do
+> modelo (scikit-learn, xgboost, numpy, pandas) são fixadas nas mesmas versões em
+> ambos os ambientes, garantindo que o `model.joblib` carregue de forma idêntica.
 
 ## Estrutura do repositório
 ```
