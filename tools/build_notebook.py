@@ -125,7 +125,9 @@ mlp = MLPClassifier(
 mlp.fit(X_train_scaled, y_train)
 print("modelos treinados")
 """),
-    ("markdown", "## 4. Validação e comparação\\n\\nFoco em **recall/F1 da classe PHA** (a accuracy é enganosa com desbalanceamento)."),
+    ("markdown", """## 4. Validação e comparação
+
+Foco em **recall/F1 da classe PHA** (a accuracy é enganosa com desbalanceamento)."""),
     ("code", """def metrics_row(name, model):
     pred = model.predict(X_test_scaled)
     return {
@@ -152,7 +154,9 @@ for ax, (name, model) in zip(axes, [("XGBoost", xgb), ("MLP", mlp)]):
     ax.set_xlabel("Previsto"); ax.set_ylabel("Real")
 plt.tight_layout(); plt.show()
 """),
-    ("markdown", "## 5. Interpretabilidade com SHAP (sobre o XGBoost)\\n\\nO SHAP ensinado (Aula 06) é para modelos de árvore; por isso a interpretabilidade é feita sobre o XGBoost."),
+    ("markdown", """## 5. Interpretabilidade com SHAP (sobre o XGBoost)
+
+O SHAP ensinado (Aula 06) é para modelos de árvore; por isso a interpretabilidade é feita sobre o XGBoost."""),
     ("code", """# SHAP no MESMO espaço em que o modelo foi treinado (escalado), com nomes.
 explainer = shap.Explainer(xgb)
 shap_values = explainer(X_test_scaled)
