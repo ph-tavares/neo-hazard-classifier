@@ -1,0 +1,10 @@
+# Dependências de desenvolvimento (coleta, notebook, testes).
+-r requirements.txt
+requests
+shap
+matplotlib
+seaborn
+jupyter
+nbformat
+nbconvert
+pytest

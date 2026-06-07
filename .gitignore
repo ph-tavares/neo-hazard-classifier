@@ -1,0 +1,14 @@
+# Segredos — NUNCA commitar a chave da NASA
+.env
+*.key
+secrets.*
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# SO
+.DS_Store

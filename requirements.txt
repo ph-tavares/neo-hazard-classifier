@@ -1,0 +1,10 @@
+# Dependências de runtime (app Gradio + Hugging Face Space).
+# gradio e huggingface_hub são pinados por compatibilidade:
+# gradio 4.x quebra com huggingface_hub >= 1.0 (HfFolder removido).
+gradio==4.44.1
+huggingface_hub==0.25.2
+joblib
+pandas
+numpy
+scikit-learn
+xgboost
