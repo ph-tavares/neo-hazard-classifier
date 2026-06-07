@@ -1,10 +1,11 @@
-# Dependências de runtime (app Gradio + Hugging Face Space).
-# gradio e huggingface_hub são pinados por compatibilidade:
-# gradio 4.x quebra com huggingface_hub >= 1.0 (HfFolder removido).
+# Dependências de runtime (app Gradio + Hugging Face Space), versões fixadas.
+# gradio/huggingface_hub: gradio 4.x quebra com huggingface_hub >= 1.0 (HfFolder removido).
+# scikit-learn/xgboost: pinados nas versões usadas para serializar model.joblib
+# (necessário para joblib.load funcionar igual no Space).
 gradio==4.44.1
 huggingface_hub==0.25.2
-joblib
-pandas
-numpy
-scikit-learn
-xgboost
+joblib==1.5.3
+pandas==2.3.3
+numpy==2.0.2
+scikit-learn==1.6.1
+xgboost==2.1.4
