@@ -166,12 +166,23 @@ de proximidade (`miss_distance_*`) dominem a decisão — coerente com a defini�
 PHA (tamanho + proximidade). Isso é consequência direta de manter a magnitude como
 feature, e está documentado.
 """),
-    ("markdown", "## 6. Escolha e persistência do modelo final\\n\\nEscolha pelo maior **F1 da classe PHA** medido. A interpretabilidade (SHAP) é feita no XGBoost independentemente."),
-    ("code", """scores = {"XGBoost": (xgb, comparison.loc[0, "f1_PHA"]),
-          "MLP": (mlp, comparison.loc[1, "f1_PHA"])}
+    ("markdown", """## 6. Escolha e persistência do modelo final
+
+As duas técnicas mostram um **trade-off claro**, e a hipótese da Aula (o `scale_pos_weight` ajudaria o XGBoost na classe minoritária) confirma-se de forma **parcial e instrutiva**:
+
+- **XGBoost**: recall_PHA alto (~0,93) com precision menor (~0,62) — o `scale_pos_weight` empurra o modelo a sinalizar mais asteroides como perigosos (mais recall, mais falsos positivos).
+- **MLP**: melhor **F1 e accuracy**, mais equilibrado (precision ~0,86, recall ~0,77).
+
+**Critério de escolha = recall da classe PHA**, por razão de domínio: em triagem de defesa planetária, **deixar de sinalizar um asteroide perigoso (falso negativo) é muito mais caro** do que um falso alarme (que apenas gera observação de acompanhamento). Sob esse critério escolhemos o **XGBoost** (recall ~0,93 vs ~0,77 do MLP — deixa escapar ~3x menos perigos). O **F1 e a accuracy favorecem o MLP**, e isso é reportado abertamente. A interpretabilidade (SHAP) é feita sobre o modelo escolhido (XGBoost, de árvore).
+"""),
+    ("code", """# Critério de seleção: RECALL da classe PHA (domínio de segurança — falso negativo
+# é mais caro que falso positivo). Reportamos os dois modelos abertamente acima.
+scores = {"XGBoost": (xgb, comparison.loc[0, "recall_PHA"]),
+          "MLP": (mlp, comparison.loc[1, "recall_PHA"])}
 best_name = max(scores, key=lambda k: scores[k][1])
 best_model = scores[best_name][0]
-print("modelo final (maior F1_PHA):", best_name)
+print("modelo final (criterio: recall da classe PHA):", best_name)
+print(comparison.to_string(index=False))
 
 joblib.dump(
     {"model": best_model, "scaler": scaler, "features": FEATURE_COLUMNS,
