@@ -1,10 +1,9 @@
-# Dependências de runtime (app Gradio + Hugging Face Space).
-# gradio e huggingface_hub são pinados por compatibilidade:
-# gradio 4.x quebra com huggingface_hub >= 1.0 (HfFolder removido).
-gradio==4.44.1
-huggingface_hub==0.25.2
-joblib
-pandas
-numpy
-scikit-learn
-xgboost
+# Dependências de runtime (app Gradio + Hugging Face Space), versões fixadas.
+# Stack único: o MESMO requirements roda local (venv Python 3.11) e no HF Space (Python 3.11).
+# Requer Python >= 3.10 (gradio 5.x). huggingface_hub é resolvido pelo próprio gradio.
+gradio==5.50.0
+joblib==1.5.3
+pandas==2.3.3
+numpy==2.0.2
+scikit-learn==1.6.1
+xgboost==2.1.4

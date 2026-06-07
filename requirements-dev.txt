@@ -1,10 +1,11 @@
-# Dependências de desenvolvimento (coleta, notebook, testes).
+# Dependências de desenvolvimento (coleta, notebook, testes), versões fixadas.
+# Requer Python >= 3.10. Ambiente validado em venv Python 3.11.
 -r requirements.txt
-requests
-shap
-matplotlib
-seaborn
-jupyter
-nbformat
-nbconvert
-pytest
+requests==2.34.2
+shap==0.51.0
+matplotlib==3.10.9
+seaborn==0.13.2
+jupyter==1.1.1
+nbformat==5.10.4
+nbconvert==7.17.1
+pytest==9.0.3
