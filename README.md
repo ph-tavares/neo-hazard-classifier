@@ -1,6 +1,12 @@
+GUILHERME ROCHA BIANCHINI - RM97974
+NIKOLAS RODRIGUES MOURA DOS SANTOS - RM551566
+PEDRO HENRIQUE PEDROSA TAVARES - RM97877
+THIAGO JARDIM DE OLIVEIRA - RM551624
+RODRIGO BRASILEIRO – RM98952
+
 # ☄️ Classificador de Risco de Asteroides (NEOs)
 
-🚀 **App no ar (teste agora):** https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
+🚀 **App no ar:** https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
 
 O catálogo da NASA tem **dezenas de milhares** de asteroides cujas órbitas os trazem
 para perto da Terra (os *NEOs* — Near-Earth Objects). A maioria é inofensiva; uma
@@ -17,7 +23,7 @@ a explicação de *por quê* (SHAP) e o app acima para testar no navegador.
 
 ---
 
-## 🌍 O problema, em linguagem simples
+## 🌍 O problema
 
 Um asteroide é marcado pela NASA como **potencialmente perigoso (PHA)** quando cumpre
 **dois critérios ao mesmo tempo**:
@@ -48,7 +54,7 @@ faz a primeira separação — e **explica** sua decisão — é um apoio concre
   registrado**, **não** um estimador da prevalência de PHA no catálogo inteiro — a
   prevalência de 10,4% aqui é maior que a do catálogo completo.
 
-### 🔑 Como obter uma chave da NASA (grátis, opcional)
+### 🔑 Como obter uma chave da NASA (opcional)
 
 A coleta só é necessária se você quiser **recriar o dataset** do zero (o snapshot já
 vem versionado). Para isso:
@@ -139,17 +145,6 @@ dominam** a decisão — exatamente coerente com a definição de PHA (tamanho +
 proximidade). Isso é consequência direta de manter a magnitude como feature, e está
 documentado como tal.
 
-## ⚠️ Limitações (honestas)
-
-- **Holdout único (não k-fold CV):** usamos split estratificado em 3 conjuntos
-  (treino/validação/teste) — seleção na validação, avaliação final no teste intocado.
-  As métricas vêm de **um único particionamento** (com seed fixa), não de validação
-  cruzada k-fold.
-- **Viés de seleção:** ver seção "Fonte dos dados".
-- **Vazamento parcial assumido:** a magnitude codifica o critério de tamanho; mantida
-  por ser uma variável física legítima e por não esvaziar a tarefa. O MOID (critério
-  orbital exato) foi removido.
-
 ## ▶️ Como executar
 
 Requer **Python ≥ 3.10** (recomendado **3.11**, mesma versão do app no ar).
@@ -182,10 +177,6 @@ python app.py
 
 Interface Gradio que carrega o modelo treinado (`model.joblib`) e classifica um
 asteroide a partir das suas características, devolvendo o veredito + a probabilidade.
-
-> Ambiente **unificado**: o mesmo `requirements.txt` (gradio 5.x, Python 3.11) roda
-> localmente (venv) e no HF Space, e o `model.joblib` é treinado/serializado nesse
-> mesmo ambiente.
 
 ## 🗂️ Estrutura do repositório
 
