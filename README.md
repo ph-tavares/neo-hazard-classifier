@@ -62,22 +62,29 @@ O **tamanho (magnitude absoluta) e a proximidade (menor distância de aproximaç
 - **Vazamento parcial assumido:** a magnitude codifica o critério de tamanho; mantida por ser uma variável física legítima e por não esvaziar a tarefa. O MOID (critério orbital exato) foi removido.
 
 ## Como executar
+
+Requer **Python ≥ 3.10** (recomendado **3.11**, mesma versão do HF Space; o app usa gradio 5.x).
+
 ```bash
-python3 -m pip install -r requirements-dev.txt
+# ambiente isolado (recomendado) — use python3.11 ou outro Python >= 3.10
+python3.11 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements-dev.txt
 
 # (opcional) recriar o dataset do zero — precisa de uma chave da NASA:
 #   export NASA_API_KEY=<sua_chave>
-#   python3 -m src.collect_neos --pages 1000
+#   python -m src.collect_neos --pages 1000
 
 # gerar e executar o notebook do pipeline (treina, avalia, SHAP, salva model.joblib):
-python3 tools/build_notebook.py
-python3 -m nbconvert --to notebook --execute --inplace notebook.ipynb
+python tools/build_notebook.py
+python -m nbconvert --to notebook --execute --inplace notebook.ipynb
 
 # rodar os testes:
-python3 -m pytest -v
+python -m pytest -v
 
 # rodar o app localmente:
-python3 app.py
+python app.py
 ```
 
 ## Aplicação no ar
@@ -87,12 +94,9 @@ https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
 Interface Gradio que carrega o modelo treinado (`model.joblib`) e classifica um
 asteroide a partir das suas características.
 
-> Nota de deploy: o Space roda em **Python 3.11** e usa **gradio 5.x** (versão
-> moderna, compatível com a infra atual do HF Spaces). O `requirements.txt` deste
-> repositório fixa `gradio 4.44.1` por causa do ambiente **local** (Python 3.9);
-> o `app.py` usa apenas APIs estáveis em ambas as versões. As bibliotecas do
-> modelo (scikit-learn, xgboost, numpy, pandas) são fixadas nas mesmas versões em
-> ambos os ambientes, garantindo que o `model.joblib` carregue de forma idêntica.
+> Nota de deploy: ambiente **unificado** — o mesmo `requirements.txt` (gradio 5.x,
+> Python 3.11) roda tanto localmente (venv) quanto no HF Space, sem divergência.
+> O `model.joblib` é treinado/serializado nesse mesmo ambiente.
 
 ## Estrutura do repositório
 ```
