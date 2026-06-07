@@ -76,8 +76,8 @@ pip install -r requirements-dev.txt
 #   export NASA_API_KEY=<sua_chave>
 #   python -m src.collect_neos --pages 1000
 
-# gerar e executar o notebook do pipeline (treina, avalia, SHAP, salva model.joblib):
-python tools/build_notebook.py
+# o notebook do pipeline já está versionado COM os outputs; para re-executá-lo
+# (treina, avalia, SHAP, salva model.joblib):
 python -m nbconvert --to notebook --execute --inplace notebook.ipynb
 
 # rodar os testes:
@@ -108,8 +108,7 @@ neo-hazard-classifier/
 ├── src/
 │   ├── neo_features.py       # lógica pura de features (testada)
 │   └── collect_neos.py       # coleta NeoWs (censo + coleta paginada)
-├── tools/build_notebook.py   # gera notebook.ipynb deterministicamente
-├── notebook.ipynb            # pipeline completo (EDA, treino, comparação, SHAP)
+├── notebook.ipynb            # pipeline completo (EDA, treino, comparação, SHAP) — versionado com outputs
 ├── app.py                    # app Gradio (carrega model.joblib; não re-treina)
 ├── model.joblib              # modelo final + scaler + features
 └── tests/                    # testes (pytest)
