@@ -1,12 +1,17 @@
 GUILHERME ROCHA BIANCHINI - RM97974
+
 NIKOLAS RODRIGUES MOURA DOS SANTOS - RM551566
+
 PEDRO HENRIQUE PEDROSA TAVARES - RM97877
+
 THIAGO JARDIM DE OLIVEIRA - RM551624
+
 RODRIGO BRASILEIRO – RM98952
 
-# ☄️ Classificador de Risco de Asteroides (NEOs)
 
-🚀 **App no ar:** https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
+# Classificador de Risco de Asteroides (NEOs)
+
+**App no ar:** https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
 
 O catálogo da NASA tem **dezenas de milhares** de asteroides cujas órbitas os trazem
 para perto da Terra (os *NEOs* — Near-Earth Objects). A maioria é inofensiva; uma
@@ -23,7 +28,7 @@ a explicação de *por quê* (SHAP) e o app acima para testar no navegador.
 
 ---
 
-## 🌍 O problema
+## O problema
 
 Um asteroide é marcado pela NASA como **potencialmente perigoso (PHA)** quando cumpre
 **dois critérios ao mesmo tempo**:
@@ -38,7 +43,7 @@ Um asteroide é marcado pela NASA como **potencialmente perigoso (PHA)** quando 
 Ou seja: **tamanho + proximidade**. A triagem manual desse fluxo é cara; um modelo que
 faz a primeira separação — e **explica** sua decisão — é um apoio concreto.
 
-## 🛰️ Fonte dos dados
+## Fonte dos dados
 
 **NASA NeoWs** (Near Earth Object Web Service), endpoint `browse`
 (`https://api.nasa.gov/neo/rest/v1/neo/browse`). Coleta reproduzível em
@@ -54,7 +59,7 @@ faz a primeira separação — e **explica** sua decisão — é um apoio concre
   registrado**, **não** um estimador da prevalência de PHA no catálogo inteiro — a
   prevalência de 10,4% aqui é maior que a do catálogo completo.
 
-### 🔑 Como obter uma chave da NASA (opcional)
+### Como obter uma chave da NASA (opcional)
 
 A coleta só é necessária se você quiser **recriar o dataset** do zero (o snapshot já
 vem versionado). Para isso:
@@ -67,7 +72,7 @@ Limites medidos: a `DEMO_KEY` pública aceita ~**10 req/hora** (suficiente só p
 teste); uma chave pessoal aceita milhares por hora (a nossa mediu **2.000 req/h**),
 o que torna a coleta de ~1.000 páginas viável em poucos minutos.
 
-### 📖 Dicionário de variáveis (o que cada número significa)
+### Dicionário de variáveis (o que cada número significa)
 
 | Variável | Significado | Faixa no nosso dataset |
 |---|---|---|
@@ -78,7 +83,7 @@ o que torna a coleta de ~1.000 páginas viável em poucos minutos.
 | `n_close_approaches` | **Quantas** aproximações foram registradas | 1 a 502 |
 | **`is_potentially_hazardous_asteroid`** | **Alvo** (1 = PHA, 0 = não) | 10,4% positivos |
 
-## 🔬 Metodologia
+## Metodologia
 
 1. **Coleta** (NeoWs `browse`, 1 linha por asteroide; features de aproximação
    agregadas **apenas sobre aproximações da Terra**, pois o critério de PHA é relativo
@@ -104,7 +109,7 @@ o que torna a coleta de ~1.000 páginas viável em poucos minutos.
    recall, F1 com foco em PHA, `classification_report`, matriz de confusão).
 6. **Interpretabilidade:** SHAP (`summary_plot`) + `plot_importance` sobre o XGBoost.
 
-## 📊 Modelos testados e resultados
+## Modelos testados e resultados
 
 **Seleção (na VALIDAÇÃO) — critério: recall da classe PHA:**
 | Modelo | Accuracy | Precision (PHA) | Recall (PHA) | F1 (PHA) |
@@ -128,7 +133,7 @@ mais caro** que um falso alarme, que apenas gera uma observação extra). No tes
 XGBoost deixa escapar **~8%** dos perigos (recall 0,917) contra **~26%** do MLP
 (0,742). É também o modelo de árvore, interpretável diretamente com SHAP.
 
-## 🧠 Interpretação com SHAP
+## Interpretação com SHAP
 
 Importância média (|SHAP|) sobre o XGBoost (conjunto de teste):
 
@@ -145,7 +150,7 @@ dominam** a decisão — exatamente coerente com a definição de PHA (tamanho +
 proximidade). Isso é consequência direta de manter a magnitude como feature, e está
 documentado como tal.
 
-## ▶️ Como executar
+## Como executar
 
 Requer **Python ≥ 3.10** (recomendado **3.11**, mesma versão do app no ar).
 
@@ -171,14 +176,14 @@ python -m pytest -v
 python app.py
 ```
 
-## 🌐 Aplicação no ar
+## Aplicação no ar
 
 **Link persistente:** https://huggingface.co/spaces/ph-tavares/neo-hazard-classifier
 
 Interface Gradio que carrega o modelo treinado (`model.joblib`) e classifica um
 asteroide a partir das suas características, devolvendo o veredito + a probabilidade.
 
-## 🗂️ Estrutura do repositório
+## Estrutura do repositório
 
 ```
 neo-hazard-classifier/
@@ -196,7 +201,7 @@ neo-hazard-classifier/
 └── tests/                    # testes (pytest)
 ```
 
-## ♻️ Reprodutibilidade
+## Reprodutibilidade
 
 `random_state=42` em todo o pipeline; dependências versionadas; `data/neos_raw.csv`
 versionado; coleta documentada em `src/collect_neos.py`. A chave da NASA nunca é
